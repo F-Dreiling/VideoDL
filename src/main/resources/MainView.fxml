@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<VBox alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml" fx:controller="dev.dreiling.videodl.MainController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <Label text="Enter YouTube URL:"/>
+    <TextField fx:id="urlField" promptText="YouTube Video URL"/>
+    <ComboBox fx:id="qualitySelector" promptText="Select Quality">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="1080p" />
+                <String fx:value="720p" />
+                <String fx:value="480p" />
+                <String fx:value="360p" />
+                <String fx:value="Audio only" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+    <Button fx:id="downloadButton" text="Download Video" onAction="#handleDownload"/>
+    <Label fx:id="statusLabel" text=""/>
+</VBox>

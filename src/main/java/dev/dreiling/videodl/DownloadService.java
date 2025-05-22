@@ -1,0 +1,60 @@
+package dev.dreiling.videodl;
+
+import java.io.File;
+import java.io.IOException;
+
+public class DownloadService {
+
+    // Utility method to extract native executables from the jar resource /bin
+    private static File extractExe(String exeName) throws IOException {
+        return Utils.extractExecutable(exeName);
+    }
+
+    public static void downloadVideo(String videoUrl, String selectedQuality) throws Exception {
+        // Extract yt-dlp.exe and ffmpeg.exe from resources/bin to temp files
+        File ytDlpExe = extractExe("yt-dlp.exe");
+        File ffmpegExe = extractExe("ffmpeg.exe");
+
+        // Get User Downloads Dir
+        String userHome = System.getProperty("user.home");
+        File downloadsDir = new File(userHome, "Downloads");
+
+        if (!downloadsDir.exists()) {
+            downloadsDir.mkdirs();
+        }
+
+        String outputPath = new File(downloadsDir, "%(title)s.%(ext)s").getAbsolutePath();
+
+        // Format Selected Quality
+        String formatCode = switch (selectedQuality) {
+            case "1080p" -> "bestvideo[height<=1080]+bestaudio/best[height<=1080]";
+            case "720p" -> "bestvideo[height<=720]+bestaudio/best[height<=720]";
+            case "480p" -> "bestvideo[height<=480]+bestaudio/best[height<=480]";
+            case "360p" -> "bestvideo[height<=360]+bestaudio/best[height<=360]";
+            case "Audio only" -> "bestaudio";
+            default -> "best[height<=360]";
+        };
+
+        // Build Process
+        ProcessBuilder builder = new ProcessBuilder(
+                ytDlpExe.getAbsolutePath(),
+                "-f", formatCode,
+                "--merge-output-format", "mp4",
+                "--ffmpeg-location", ffmpegExe.getAbsolutePath(),
+                "-o", outputPath,
+                videoUrl
+        );
+
+        builder.inheritIO();
+        builder.redirectErrorStream(true);
+
+        Process process = builder.start();
+
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            throw new RuntimeException("yt-dlp failed with exit code " + exitCode);
+        }
+
+        System.out.println("Download complete!");
+    }
+}
