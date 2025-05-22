@@ -2,30 +2,31 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
+<?import javafx.scene.control.ProgressBar?>
 
-<VBox alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml" fx:controller="dev.dreiling.videodl.MainController">
+<VBox alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dev.dreiling.videodl.MainController"
+      prefWidth="480" prefHeight="200">
+
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
-    <Label text="Enter YouTube URL:"/>
-    <TextField fx:id="urlField" promptText="YouTube Video URL"/>
-    <ComboBox fx:id="qualitySelector" promptText="Select Quality">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="1080p" />
-                <String fx:value="720p" />
-                <String fx:value="480p" />
-                <String fx:value="360p" />
-                <String fx:value="Audio only" />
-            </FXCollections>
-        </items>
-    </ComboBox>
-    <Button fx:id="downloadButton" text="Download Video" onAction="#handleDownload"/>
-    <Label fx:id="statusLabel" text=""/>
+
+    <Label text="Enter YouTube Video URL:"/>
+    <TextField fx:id="urlField" promptText="Video URL" prefWidth="440"/>
+
+    <HBox alignment="CENTER" spacing="10" prefWidth="440">
+        <ComboBox fx:id="qualitySelector" promptText="Select Quality" prefWidth="220">
+        </ComboBox>
+        <Button fx:id="downloadButton" text="Download Video" onAction="#handleDownload" prefWidth="220"/>
+    </HBox>
+
+    <ProgressBar fx:id="progressBar" prefWidth="440" prefHeight="20" progress="0.0" style="-fx-accent: #00cc66;" />
+
+    <Label fx:id="progressLabel" text="Waiting..." />
 </VBox>

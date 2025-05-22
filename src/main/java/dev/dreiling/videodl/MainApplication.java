@@ -19,7 +19,7 @@ public class MainApplication extends Application {
 			Image image = new Image(this.getClass().getResourceAsStream("/icon.png"));
 			primaryStage.getIcons().add(image);
 
-			primaryStage.setScene(new Scene(root, 400, 200));
+			primaryStage.setScene(new Scene(root));
 			primaryStage.show();
 		}
 		catch (Exception e) {
