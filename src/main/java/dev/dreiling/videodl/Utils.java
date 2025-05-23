@@ -7,8 +7,7 @@ import java.nio.file.StandardCopyOption;
 public class Utils {
 
     /**
-     * Extracts a native executable from the jar resource folder /bin
-     * to a temporary file and returns the extracted File.
+     * Extracts a native executable from the jar resource /bin to a temporary file
      */
     public static File extractExecutable(String exeName) throws IOException {
         String resourcePath = "/bin/" + exeName;

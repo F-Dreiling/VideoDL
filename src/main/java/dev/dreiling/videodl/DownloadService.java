@@ -17,11 +17,15 @@ public class DownloadService {
         File ytDlpExe = extractExe("yt-dlp.exe");
         File ffmpegExe = extractExe("ffmpeg.exe");
 
-        // Get User Downloads Dir
+        // Get User Downloads Dir or fallback to App Downloads Dir
         String userHome = System.getProperty("user.home");
         File downloadsDir = new File(userHome, "Downloads");
+
         if (!downloadsDir.exists()) {
-            downloadsDir.mkdirs();
+            downloadsDir = new File(System.getProperty("user.dir"), "downloads");
+            if (!downloadsDir.exists()) {
+                downloadsDir.mkdirs();
+            }
         }
         String outputPath = new File(downloadsDir, "%(title)s.%(ext)s").getAbsolutePath();
 

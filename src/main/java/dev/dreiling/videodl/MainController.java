@@ -20,37 +20,46 @@ public class MainController {
 
     @FXML
     public void handleDownload(ActionEvent event) {
+
         String url = urlField.getText();
         if (url == null || url.isEmpty()) {
             progressLabel.setText("Please enter a YouTube URL.");
             return;
         }
 
+        // Get selected quality, 360p as fallback
         String selected = qualitySelector.getValue();
         if (selected == null) {
             selected = "360p";
+            String finalSelected = selected;
+            Platform.runLater(() -> qualitySelector.setValue(finalSelected));
         }
-        String selectedQuality = selected;
+        String quality = selected;
 
+        // Prepare Download
         downloadButton.setDisable(true);
+        qualitySelector.setDisable(true);
         progressLabel.setText("Downloading...");
         progressBar.setProgress(0);
 
+        // Start Download
         new Thread(() -> {
             try {
-                DownloadService.downloadVideo(url, selectedQuality,
+                DownloadService.downloadVideo(url, quality,
                         progress -> Platform.runLater(() -> progressBar.setProgress(progress)),
                         status -> Platform.runLater(() -> progressLabel.setText(status))
                 );
                 Platform.runLater(() -> {
                     progressLabel.setText("Download completed!");
                     downloadButton.setDisable(false);
+                    qualitySelector.setDisable(false);
                 });
             }
             catch (Exception e) {
                 Platform.runLater(() -> {
                     progressLabel.setText("Error: " + e.getMessage());
                     downloadButton.setDisable(false);
+                    qualitySelector.setDisable(false);
                 });
             }
         }).start();
