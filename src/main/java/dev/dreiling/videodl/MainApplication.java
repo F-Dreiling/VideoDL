@@ -14,11 +14,11 @@ public class MainApplication extends Application {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
 			Parent root = loader.load();
-			primaryStage.setTitle("VideoDL");
 
 			Image image = new Image(this.getClass().getResourceAsStream("/icon.png"));
 			primaryStage.getIcons().add(image);
-
+			primaryStage.setTitle("VideoDL");
+			primaryStage.setResizable(false);
 			primaryStage.setScene(new Scene(root));
 			primaryStage.show();
 		}

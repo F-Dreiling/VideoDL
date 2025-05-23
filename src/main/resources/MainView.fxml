@@ -11,22 +11,22 @@
 
 <VBox alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml"
       fx:controller="dev.dreiling.videodl.MainController"
-      prefWidth="480" prefHeight="200">
+      prefWidth="480" prefHeight="220" style="-fx-background: #160408;">
 
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets top="10" right="20" bottom="10" left="20"/>
     </padding>
 
-    <Label text="Enter YouTube Video URL:"/>
-    <TextField fx:id="urlField" promptText="Video URL" prefWidth="440"/>
+    <Label text="Enter YouTube Video URL:" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+    <TextField fx:id="urlField" promptText="Video URL" prefWidth="440" style="-fx-font-size: 16;"/>
 
     <HBox alignment="CENTER" spacing="10" prefWidth="440">
-        <ComboBox fx:id="qualitySelector" promptText="Select Quality" prefWidth="220">
+        <ComboBox fx:id="qualitySelector" promptText="Select Quality" prefWidth="220" style="-fx-font-size: 16;">
         </ComboBox>
-        <Button fx:id="downloadButton" text="Download Video" onAction="#handleDownload" prefWidth="220"/>
+        <Button fx:id="downloadButton" text="Download Video" onAction="#handleDownload" prefWidth="220" style="-fx-font-size: 16;"/>
     </HBox>
 
-    <ProgressBar fx:id="progressBar" prefWidth="440" prefHeight="20" progress="0.0" style="-fx-accent: #00cc66;" />
+    <ProgressBar fx:id="progressBar" prefWidth="440" prefHeight="36" progress="0.0" style="-fx-accent: #00cc66;"/>
 
-    <Label fx:id="progressLabel" text="Waiting..." />
+    <Label fx:id="progressLabel" text="Waiting..." style="-fx-font-size: 16;"/>
 </VBox>
