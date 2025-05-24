@@ -11,6 +11,18 @@ public class DownloadService {
         return Utils.extractExecutable(exeName);
     }
 
+    // Extract the error occurred during download
+    private static String extractErrorMessage(String output) {
+        // Find lines containing "error" or "unable"
+        StringBuilder errors = new StringBuilder();
+        for (String line : output.split("\\R")) {
+            if (line.toLowerCase().contains("error") || line.toLowerCase().contains("unable")) {
+                errors.append(line);
+            }
+        }
+        return errors.length() > 0 ? errors.toString().trim() : "Unknown error occurred.";
+    }
+
     public static void downloadVideo(String downloadsDir, String videoUrl, String quality, Consumer<Double> progressCallback, Consumer<String> statusCallback) throws Exception {
 
         // Extract yt-dlp.exe and ffmpeg.exe from resources/bin to temp files
@@ -42,13 +54,14 @@ public class DownloadService {
 
         builder.redirectErrorStream(true);
         Process process = builder.start();
-
-        // Read and Update Progress
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
+        // Read and Update Progress and Log output
+        StringBuilder outputLog = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
             String parsed = line.trim();
+            outputLog.append(parsed).append(System.lineSeparator());
 
             // Call back status for logging
             Platform.runLater(() -> statusCallback.accept(parsed));
@@ -69,11 +82,11 @@ public class DownloadService {
             }
         }
 
-        try {
-            process.waitFor();
-        }
-        catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        // Wait for process to finish and throw exception on error
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            throw new Exception(extractErrorMessage(outputLog.toString()));
         }
     }
 }

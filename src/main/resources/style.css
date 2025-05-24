@@ -18,7 +18,7 @@
 }
 
 .subtext {
-    -fx-text-fill: rgba(245, 245, 220, 0.45);
+    -fx-text-fill: rgba(245, 245, 220, 0.55);
 }
 
 .progressbar .bar {

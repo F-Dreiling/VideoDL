@@ -69,7 +69,7 @@ public class MainController {
             }
             catch (Exception e) {
                 Platform.runLater(() -> {
-                    progressLabel.setText("Error: " + e.getMessage());
+                    progressLabel.setText(e.getMessage());
                     directoryButton.setDisable(false);
                     downloadButton.setDisable(false);
                     qualitySelector.setDisable(false);
