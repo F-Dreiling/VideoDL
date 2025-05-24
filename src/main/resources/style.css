@@ -14,11 +14,11 @@
 }
 
 .text {
-    -fx-text-fill: rgba(245, 245, 220, 0.8);
+    -fx-text-fill: rgba(245, 245, 220, 0.85);
 }
 
 .subtext {
-    -fx-text-fill: rgba(245, 245, 220, 0.4);
+    -fx-text-fill: rgba(245, 245, 220, 0.45);
 }
 
 .progressbar .bar {
