@@ -6,10 +6,12 @@ import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 
 public class MainController {
+
+    private DirectoryChooser directoryChooser;
+    private String outputDirectory;
 
     @FXML
     private TextField urlField;
@@ -25,9 +27,6 @@ public class MainController {
     private Label directoryLabel;
     @FXML
     private Button directoryButton;
-
-    private DirectoryChooser directoryChooser;
-    private String outputDirectory;
 
     @FXML
     public void handleDownload(ActionEvent event) {
@@ -80,39 +79,51 @@ public class MainController {
     }
 
     public void handleOutput(ActionEvent event) {
-        // Get the current stage from any UI control
+        // Get the current stage from UI control
         Stage stage = (Stage) directoryButton.getScene().getWindow();
 
+        // Get folder from Chooser dialog and validate
         File selectedDir = directoryChooser.showDialog(stage);
         if (selectedDir != null && selectedDir.isDirectory()) {
             outputDirectory = selectedDir.getAbsolutePath();
             directoryLabel.setText(outputDirectory);
         }
+        else {
+            directoryLabel.setText("Select valid directory");
+        }
     }
 
-    // Initialize GUI
     public void initialize() {
         // Initialize DirectoryChooser with default folder (Windows Downloads)
         String userHome = System.getProperty("user.home");
         File downloadsFolder = new File(userHome, "Downloads");
         directoryChooser = new DirectoryChooser();
 
+        // If valid, set to default downloads folder
         if (downloadsFolder.exists() && downloadsFolder.isDirectory()) {
             directoryChooser.setInitialDirectory(downloadsFolder);
             outputDirectory = downloadsFolder.getAbsolutePath();
             directoryLabel.setText(outputDirectory);
         }
+        // If not valid, set to {root}/downloads folder and create if necessary
         else {
             downloadsFolder = new File(System.getProperty("user.dir"), "downloads");
-
-            directoryChooser.setInitialDirectory(downloadsFolder);
             if (!downloadsFolder.exists()) {
                 downloadsFolder.mkdirs();
             }
+
+            directoryChooser.setInitialDirectory(downloadsFolder);
             outputDirectory = downloadsFolder.getAbsolutePath();
             directoryLabel.setText(outputDirectory);
         }
 
+        // Make sure we have valid output folder
+        if (outputDirectory == null || outputDirectory.isEmpty()) {
+            directoryLabel.setText("No output directory selected");
+            return;
+        }
+
+        // Populate quality options
         qualitySelector.getItems().addAll("1080p", "720p", "480p", "360p", "Audio only");
     }
 }

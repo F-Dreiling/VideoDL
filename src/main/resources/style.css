@@ -41,3 +41,21 @@
 .button:disabled {
     -fx-text-fill: rgba(0, 0, 0, 0.4);
 }
+
+.combo-box .list-cell {
+    -fx-alignment: center;
+}
+
+.combo-box .arrow-button {
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-max-width: 0;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-opacity: 0;
+    -fx-scale-x: 0;
+    -fx-scale-y: 0;
+}
