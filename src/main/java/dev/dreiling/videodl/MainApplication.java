@@ -16,10 +16,15 @@ public class MainApplication extends Application {
 			Parent root = loader.load();
 
 			Image image = new Image(this.getClass().getResourceAsStream("/icon.png"));
+
 			primaryStage.getIcons().add(image);
 			primaryStage.setTitle("VideoDL");
 			primaryStage.setResizable(false);
-			primaryStage.setScene(new Scene(root));
+
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+
+			primaryStage.setScene(scene);
 			primaryStage.show();
 		}
 		catch (Exception e) {

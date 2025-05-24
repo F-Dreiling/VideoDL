@@ -1,0 +1,43 @@
+.background {
+    -fx-background-image: url("stripes.png");
+        -fx-background-repeat: repeat;
+        -fx-background-position: top left;
+        -fx-background-size: auto;
+}
+
+.block {
+    -fx-font-size: 16;
+}
+
+.header {
+    -fx-font-weight: bold;
+}
+
+.text {
+    -fx-text-fill: rgba(245, 245, 220, 0.8);
+}
+
+.subtext {
+    -fx-text-fill: rgba(245, 245, 220, 0.4);
+}
+
+.progressbar .bar {
+    -fx-background-color: linear-gradient(
+        from 0px .75em to .75em 0px,
+        repeat,
+        -fx-accent 0%,
+        -fx-accent 49%,
+        derive(-fx-accent, 30%) 50%,
+        derive(-fx-accent, 30%) 99%
+    );
+}
+
+.combo-box:disabled,
+.button:disabled {
+    -fx-opacity: 1.0;
+    -fx-background-color: #888;
+}
+
+.button:disabled {
+    -fx-text-fill: rgba(0, 0, 0, 0.4);
+}
