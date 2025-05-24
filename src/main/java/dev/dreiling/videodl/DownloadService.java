@@ -11,23 +11,11 @@ public class DownloadService {
         return Utils.extractExecutable(exeName);
     }
 
-    public static void downloadVideo(String videoUrl, String quality, Consumer<Double> progressCallback, Consumer<String> statusCallback) throws Exception {
+    public static void downloadVideo(String downloadsDir, String videoUrl, String quality, Consumer<Double> progressCallback, Consumer<String> statusCallback) throws Exception {
 
         // Extract yt-dlp.exe and ffmpeg.exe from resources/bin to temp files
         File ytDlpExe = extractExe("yt-dlp.exe");
         File ffmpegExe = extractExe("ffmpeg.exe");
-
-        // Get User Downloads Dir or fallback to App Downloads Dir
-        String userHome = System.getProperty("user.home");
-        File downloadsDir = new File(userHome, "Downloads");
-
-        if (!downloadsDir.exists()) {
-            downloadsDir = new File(System.getProperty("user.dir"), "downloads");
-            if (!downloadsDir.exists()) {
-                downloadsDir.mkdirs();
-            }
-        }
-        String outputPath = new File(downloadsDir, "%(title)s.%(ext)s").getAbsolutePath();
 
         // Format Selected Quality
         String formatCode = switch (quality) {
@@ -38,6 +26,9 @@ public class DownloadService {
             case "Audio only" -> "bestaudio";
             default -> "best[height<=360]";
         };
+
+        // Set file output
+        String outputPath = new File(downloadsDir, "%(title)s.%(ext)s").getAbsolutePath();
 
         // Build Process
         ProcessBuilder builder = new ProcessBuilder(
