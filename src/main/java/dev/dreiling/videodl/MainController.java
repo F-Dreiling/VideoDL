@@ -33,7 +33,7 @@ public class MainController {
 
         String url = urlField.getText();
         if (url == null || url.isEmpty()) {
-            progressLabel.setText("Please enter a YouTube URL.");
+            progressLabel.setText("Please enter a valid Video URL.");
             return;
         }
 
