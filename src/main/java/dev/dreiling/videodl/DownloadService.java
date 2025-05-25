@@ -6,23 +6,6 @@ import java.util.function.Consumer;
 
 public class DownloadService {
 
-    // Utility method to extract native executables from the jar resource /bin
-    private static File extractExe(String exeName) throws IOException {
-        return Utils.extractExecutable(exeName);
-    }
-
-    // Extract the error occurred during download
-    private static String extractErrorMessage(String output) {
-        // Find lines containing "error" or "unable"
-        StringBuilder errors = new StringBuilder();
-        for (String line : output.split("\\R")) {
-            if (line.toLowerCase().contains("error") || line.toLowerCase().contains("unable")) {
-                errors.append(line);
-            }
-        }
-        return errors.length() > 0 ? errors.toString().trim() : "Unknown error occurred.";
-    }
-
     public static void downloadVideo(String downloadsDir, String videoUrl, String quality, Consumer<Double> progressCallback, Consumer<String> statusCallback) throws Exception {
 
         // Extract yt-dlp.exe and ffmpeg.exe from resources/bin to temp files
@@ -39,13 +22,18 @@ public class DownloadService {
             default -> "best[height<=360]";
         };
 
-        // Set file output
-        String outputPath = new File(downloadsDir, "%(title)s.%(ext)s").getAbsolutePath();
+        // Extract title and sanitize
+        String rawTitle = Utils.getVideoTitle(ytDlpExe, videoUrl);
+        String sanitizedTitle = Utils.sanitizeTitle(rawTitle);
+
+        // Set output path using sanitized title
+        String outputPath = new File(downloadsDir, sanitizedTitle + ".%(ext)s").getAbsolutePath();
 
         // Build Process
         ProcessBuilder builder = new ProcessBuilder(
                 ytDlpExe.getAbsolutePath(),
                 "-f", formatCode,
+                "--no-warnings",
                 "--merge-output-format", "mp4",
                 "--ffmpeg-location", ffmpegExe.getAbsolutePath(),
                 "-o", outputPath,
@@ -54,14 +42,19 @@ public class DownloadService {
 
         builder.redirectErrorStream(true);
         Process process = builder.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
         // Read and Update Progress and Log output
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         StringBuilder outputLog = new StringBuilder();
         String line;
+
         while ((line = reader.readLine()) != null) {
             String parsed = line.trim();
-            outputLog.append(parsed).append(System.lineSeparator());
+            String message = Utils.filterMessage(parsed);
+
+            if (!message.isEmpty()) {
+                outputLog.append(message).append(System.lineSeparator());
+            }
 
             // Call back status for logging
             Platform.runLater(() -> statusCallback.accept(parsed));
@@ -69,6 +62,7 @@ public class DownloadService {
             // Example line: [download]  42.1% of 5.00MiB at 1.23MiB/s ETA 00:10
             if (parsed.startsWith("[download]")) {
                 int percentIndex = parsed.indexOf('%');
+
                 if (percentIndex != -1) {
                     try {
                         int start = parsed.lastIndexOf(' ', percentIndex - 1) + 1;
@@ -82,11 +76,18 @@ public class DownloadService {
             }
         }
 
-        // Wait for process to finish and throw exception on error
+        // Wait for process to finish and write log + history
         int exitCode = process.waitFor();
+        Utils.writeLog(outputLog.toString());
+        Utils.writeHistory(exitCode, sanitizedTitle, videoUrl);
 
         if (exitCode != 0) {
-            throw new Exception(extractErrorMessage(outputLog.toString()));
+            throw new Exception(Utils.extractErrorMessage(outputLog.toString()));
         }
+    }
+
+    // Utility method to extract native executables from the jar resource /bin
+    private static File extractExe(String exeName) throws IOException {
+        return Utils.extractExecutable(exeName);
     }
 }

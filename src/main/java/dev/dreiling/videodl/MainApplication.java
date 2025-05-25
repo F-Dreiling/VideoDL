@@ -16,7 +16,6 @@ public class MainApplication extends Application {
 			Parent root = loader.load();
 
 			Image image = new Image(this.getClass().getResourceAsStream("/icon.png"));
-
 			primaryStage.getIcons().add(image);
 			primaryStage.setTitle("VideoDL");
 			primaryStage.setResizable(false);
