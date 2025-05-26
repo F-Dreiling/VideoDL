@@ -11,6 +11,19 @@ public class Utils {
     private static final File LOG_DIR = new File("log");
     private static final File HISTORY_FILE = new File("history.txt");
 
+    // Validate URL
+    public static boolean isValidUrl(String url) {
+        if (url == null || url.isEmpty()) return false;
+
+        try {
+            new java.net.URL(url).toURI(); // Validates both syntax and URI rules
+            return url.startsWith("http://") || url.startsWith("https://");
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+
     // Extracts a native executable from the jar resource /bin to a temporary file
     public static File extractExecutable(String exeName) throws IOException {
         String resourcePath = "/bin/" + exeName;
@@ -142,7 +155,26 @@ public class Utils {
                 errors.append(line);
             }
         }
-        return errors.length() > 0 ? errors.toString().trim() : "Unknown error occurred.";
+        return !errors.isEmpty() ? errors.toString().trim() : "Unknown error occurred.";
+    }
+
+    // Parse progress, Example line: [download] 42.1% of 5.00MiB at 1.23MiB/s ETA 00:10
+    public static Double parseProgress(String line) {
+        if (line == null || !line.startsWith("[download]")) {
+            return null;
+        }
+
+        int percentIndex = line.indexOf('%');
+        if (percentIndex != -1) {
+            try {
+                int start = line.lastIndexOf(' ', percentIndex - 1) + 1;
+                String percentage = line.substring(start, percentIndex).trim();
+                return Double.parseDouble(percentage) / 100.0;
+            }
+            catch (NumberFormatException | StringIndexOutOfBoundsException ignored) {
+            }
+        }
+        return null;
     }
 
     // Write daily log files
@@ -154,7 +186,7 @@ public class Utils {
             File logFile = new File(LOG_DIR, filename);
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true))) {
-                writer.write("[Log " + getTimestamp() + "] ");
+                writer.write("[Log " + getTimestamp() + "]\n");
                 writer.write(content);
                 writer.write("\n");
             }

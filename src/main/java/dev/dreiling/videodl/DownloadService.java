@@ -48,27 +48,15 @@ public class DownloadService {
                 outputLog.append(message).append(System.lineSeparator());
             }
 
-            // Call back status for logging
-            Platform.runLater(() -> statusCallback.accept(parsed));
-
-            // Example line: [download]  42.1% of 5.00MiB at 1.23MiB/s ETA 00:10
-            if (parsed.startsWith("[download]")) {
-                int percentIndex = parsed.indexOf('%');
-
-                if (percentIndex != -1) {
-                    try {
-                        int start = parsed.lastIndexOf(' ', percentIndex - 1) + 1;
-                        String percentage = parsed.substring(start, percentIndex).trim();
-                        double progress = Double.parseDouble(percentage) / 100.0;
-
-                        Platform.runLater(() -> progressCallback.accept(progress));
-                    }
-                    catch (NumberFormatException | StringIndexOutOfBoundsException ignored) {}
-                }
+            // Call back progress and status for UI updates
+            Double progress = Utils.parseProgress(parsed);
+            if (progress != null) {
+                Platform.runLater(() -> progressCallback.accept(progress));
             }
+            Platform.runLater(() -> statusCallback.accept(parsed));
         }
 
-        // Wait for process to finish
+        // Wait for the process to finish
         int exitCode = process.waitFor();
 
         // Write log and history

@@ -32,7 +32,7 @@ public class MainController {
     public void handleDownload(ActionEvent event) {
 
         String url = urlField.getText();
-        if (url == null || url.isEmpty()) {
+        if (!Utils.isValidUrl(url)) {
             progressLabel.setText("Please enter a valid Video URL");
             return;
         }
@@ -94,7 +94,7 @@ public class MainController {
     }
 
     public void initialize() {
-        // Initialize DirectoryChooser with default folder (Windows Downloads)
+        // Initialize DirectoryChooser with the default folder (Windows Downloads)
         String userHome = System.getProperty("user.home");
         File downloadsFolder = new File(userHome, "Downloads");
         directoryChooser = new DirectoryChooser();
@@ -117,7 +117,7 @@ public class MainController {
             directoryLabel.setText("Output: " + outputDirectory);
         }
 
-        // Make sure we have valid output folder
+        // Make sure there's a valid output folder
         if (outputDirectory == null || outputDirectory.isEmpty()) {
             directoryLabel.setText("Output: No valid folder selected");
             return;
