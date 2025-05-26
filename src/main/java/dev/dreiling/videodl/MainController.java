@@ -12,6 +12,7 @@ public class MainController {
 
     private DirectoryChooser directoryChooser;
     private String outputDirectory;
+    private boolean isStyleChanged = false;
 
     @FXML
     private TextField urlField;
@@ -31,10 +32,19 @@ public class MainController {
     @FXML
     public void handleDownload(ActionEvent event) {
 
+        // Validate URL
         String url = urlField.getText();
         if (!Utils.isValidUrl(url)) {
             progressLabel.setText("Please enter a valid Video URL");
             return;
+        }
+
+        // Change progressbar style upon starting a download
+        if (!isStyleChanged) {
+            progressBar.getStyleClass().remove("progressbarInit");
+            progressBar.getStyleClass().add("progressbar");
+            progressBar.setProgress(0);
+            isStyleChanged = true;
         }
 
         // Get selected quality, 360p as fallback
@@ -51,7 +61,6 @@ public class MainController {
         downloadButton.setDisable(true);
         directoryButton.setDisable(true);
         progressLabel.setText("Downloading...");
-        progressBar.setProgress(0);
 
         // Start Download
         new Thread(() -> {

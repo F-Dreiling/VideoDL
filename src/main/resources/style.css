@@ -33,6 +33,17 @@
     );
 }
 
+.progressbarInit .bar {
+    -fx-background-color: linear-gradient(
+        from 0px 0px to 20px 0px,
+        repeat,
+        -fx-accent 0%,
+        -fx-accent 49%,
+        derive(-fx-accent, 30%) 50%,
+        derive(-fx-accent, 30%) 100%
+    );
+}
+
 .combo-box:disabled,
 .button:disabled {
     -fx-opacity: 1.0;

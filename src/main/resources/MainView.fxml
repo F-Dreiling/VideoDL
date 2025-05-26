@@ -9,6 +9,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ProgressBar?>
 
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="dev.dreiling.videodl.MainController"
       alignment="CENTER" spacing="10" prefWidth="520" prefHeight="270" styleClass="background">
 
@@ -30,7 +32,7 @@
         <Label fx:id="directoryLabel" prefWidth="480" styleClass="element, text"/>
     </HBox>
 
-    <ProgressBar fx:id="progressBar" prefWidth="480" prefHeight="36" progress="0.0" styleClass="progressbar"/>
+    <ProgressBar fx:id="progressBar" prefWidth="480" prefHeight="36" progress="1.0" styleClass="progressbarInit" />
 
     <Label fx:id="progressLabel" text="Waiting..." styleClass="element, subtext"/>
 </VBox>
