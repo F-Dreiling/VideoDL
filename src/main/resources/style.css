@@ -24,12 +24,12 @@
 
 .progressbar .bar {
     -fx-background-color: linear-gradient(
-        from 0px .75em to .75em 0px,
+        from 0px 1em to 1em 0px,
         repeat,
         -fx-accent 0%,
-        -fx-accent 49%,
+        -fx-accent 50%,
         derive(-fx-accent, 30%) 50%,
-        derive(-fx-accent, 30%) 99%
+        derive(-fx-accent, 30%) 100%
     );
 }
 
@@ -38,7 +38,7 @@
         from 0px 0px to 20px 0px,
         repeat,
         -fx-accent 0%,
-        -fx-accent 49%,
+        -fx-accent 50%,
         derive(-fx-accent, 30%) 50%,
         derive(-fx-accent, 30%) 100%
     );
