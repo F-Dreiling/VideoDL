@@ -1,16 +1,17 @@
 .background {
-    -fx-background-image: url("stripes.png");
+    -fx-background-image: url("background.png");
         -fx-background-repeat: repeat;
         -fx-background-position: top left;
         -fx-background-size: auto;
 }
 
-.block {
-    -fx-font-size: 16;
-}
-
 .header {
     -fx-font-weight: bold;
+    -fx-font-size: 20;
+}
+
+.element {
+    -fx-font-size: 16;
 }
 
 .text {

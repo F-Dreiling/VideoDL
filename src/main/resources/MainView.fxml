@@ -16,21 +16,21 @@
         <Insets top="15" right="20" bottom="15" left="20"/>
     </padding>
 
-    <Label text="Enter Video URL:" styleClass="block, text, header"/>
-    <TextField fx:id="urlField" promptText="Video URL" prefWidth="480" styleClass="block"/>
+    <Label text="Enter Video URL:" styleClass="header, text"/>
+    <TextField fx:id="urlField" promptText="Video URL" prefWidth="480" styleClass="element"/>
 
     <HBox alignment="CENTER" spacing="10" prefWidth="480">
-        <Button fx:id="directoryButton" text="Output Directory" onAction="#handleOutput" prefWidth="240" styleClass="block"/>
-        <Label fx:id="directoryLabel" text="" prefWidth="240" styleClass="block, text"/>
+        <Button fx:id="directoryButton" text="Output Directory" onAction="#handleOutput" prefWidth="160" styleClass="element"/>
+        <ComboBox fx:id="qualitySelector" promptText="Select Quality" prefWidth="160" styleClass="element">
+        </ComboBox>
+        <Button fx:id="downloadButton" text="Download Video" onAction="#handleDownload" prefWidth="160" styleClass="element"/>
     </HBox>
 
     <HBox alignment="CENTER" spacing="10" prefWidth="480">
-        <ComboBox fx:id="qualitySelector" promptText="Select Quality" prefWidth="240" styleClass="block">
-        </ComboBox>
-        <Button fx:id="downloadButton" text="Download Video" onAction="#handleDownload" prefWidth="240" styleClass="block"/>
+        <Label fx:id="directoryLabel" prefWidth="480" styleClass="element, text"/>
     </HBox>
 
     <ProgressBar fx:id="progressBar" prefWidth="480" prefHeight="36" progress="0.0" styleClass="progressbar"/>
 
-    <Label fx:id="progressLabel" text="Waiting..." styleClass="block, subtext"/>
+    <Label fx:id="progressLabel" text="Waiting..." styleClass="element, subtext"/>
 </VBox>

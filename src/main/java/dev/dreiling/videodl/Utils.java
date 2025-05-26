@@ -90,6 +90,18 @@ public class Utils {
         return title;
     }
 
+    // Format Selected Quality
+    public static String getFormatCode(String quality) {
+        return switch (quality) {
+            case "1080p" -> "bestvideo[height<=1080]+bestaudio/best[height<=1080]";
+            case "720p" -> "bestvideo[height<=720]+bestaudio/best[height<=720]";
+            case "480p" -> "bestvideo[height<=480]+bestaudio/best[height<=480]";
+            case "360p" -> "bestvideo[height<=360]+bestaudio/best[height<=360]";
+            case "Audio only" -> "bestaudio";
+            default -> "best[height<=360]";
+        };
+    }
+
     // Filter the log for relevant messages
     public static String filterMessage(String message) {
         if (message == null || message.isEmpty()) {

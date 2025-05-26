@@ -16,24 +16,24 @@ public class MainController {
     @FXML
     private TextField urlField;
     @FXML
+    private ComboBox<String> qualitySelector;
+    @FXML
     private Button downloadButton;
+    @FXML
+    private Button directoryButton;
+    @FXML
+    private Label directoryLabel;
     @FXML
     private Label progressLabel;
     @FXML
     private ProgressBar progressBar;
-    @FXML
-    private ComboBox<String> qualitySelector;
-    @FXML
-    private Label directoryLabel;
-    @FXML
-    private Button directoryButton;
 
     @FXML
     public void handleDownload(ActionEvent event) {
 
         String url = urlField.getText();
         if (url == null || url.isEmpty()) {
-            progressLabel.setText("Please enter a valid Video URL.");
+            progressLabel.setText("Please enter a valid Video URL");
             return;
         }
 
@@ -47,9 +47,9 @@ public class MainController {
         String quality = selected;
 
         // Prepare Download
-        directoryButton.setDisable(true);
-        downloadButton.setDisable(true);
         qualitySelector.setDisable(true);
+        downloadButton.setDisable(true);
+        directoryButton.setDisable(true);
         progressLabel.setText("Downloading...");
         progressBar.setProgress(0);
 
@@ -62,17 +62,17 @@ public class MainController {
                 );
                 Platform.runLater(() -> {
                     progressLabel.setText("Download completed!");
-                    directoryButton.setDisable(false);
-                    downloadButton.setDisable(false);
                     qualitySelector.setDisable(false);
+                    downloadButton.setDisable(false);
+                    directoryButton.setDisable(false);
                 });
             }
             catch (Exception e) {
                 Platform.runLater(() -> {
                     progressLabel.setText(e.getMessage());
-                    directoryButton.setDisable(false);
-                    downloadButton.setDisable(false);
                     qualitySelector.setDisable(false);
+                    downloadButton.setDisable(false);
+                    directoryButton.setDisable(false);
                 });
             }
         }).start();
@@ -83,13 +83,13 @@ public class MainController {
         Stage stage = (Stage) directoryButton.getScene().getWindow();
 
         // Get folder from Chooser dialog and validate
-        File selectedDir = directoryChooser.showDialog(stage);
-        if (selectedDir != null && selectedDir.isDirectory()) {
-            outputDirectory = selectedDir.getAbsolutePath();
-            directoryLabel.setText(outputDirectory);
+        File selectedFolder = directoryChooser.showDialog(stage);
+        if (selectedFolder != null && selectedFolder.isDirectory()) {
+            outputDirectory = selectedFolder.getAbsolutePath();
+            directoryLabel.setText("Output: " + outputDirectory);
         }
         else {
-            directoryLabel.setText("Select valid directory");
+            directoryLabel.setText("Output: Select valid folder");
         }
     }
 
@@ -103,7 +103,7 @@ public class MainController {
         if (downloadsFolder.exists() && downloadsFolder.isDirectory()) {
             directoryChooser.setInitialDirectory(downloadsFolder);
             outputDirectory = downloadsFolder.getAbsolutePath();
-            directoryLabel.setText(outputDirectory);
+            directoryLabel.setText("Output: " + outputDirectory);
         }
         // If not valid, set to {root}/downloads folder and create if necessary
         else {
@@ -114,12 +114,12 @@ public class MainController {
 
             directoryChooser.setInitialDirectory(downloadsFolder);
             outputDirectory = downloadsFolder.getAbsolutePath();
-            directoryLabel.setText(outputDirectory);
+            directoryLabel.setText("Output: " + outputDirectory);
         }
 
         // Make sure we have valid output folder
         if (outputDirectory == null || outputDirectory.isEmpty()) {
-            directoryLabel.setText("No output directory selected");
+            directoryLabel.setText("Output: No valid folder selected");
             return;
         }
 

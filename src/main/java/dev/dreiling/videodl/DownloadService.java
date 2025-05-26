@@ -9,18 +9,8 @@ public class DownloadService {
     public static void downloadVideo(String downloadsDir, String videoUrl, String quality, Consumer<Double> progressCallback, Consumer<String> statusCallback) throws Exception {
 
         // Extract yt-dlp.exe and ffmpeg.exe from resources/bin to temp files
-        File ytDlpExe = extractExe("yt-dlp.exe");
-        File ffmpegExe = extractExe("ffmpeg.exe");
-
-        // Format Selected Quality
-        String formatCode = switch (quality) {
-            case "1080p" -> "bestvideo[height<=1080]+bestaudio/best[height<=1080]";
-            case "720p" -> "bestvideo[height<=720]+bestaudio/best[height<=720]";
-            case "480p" -> "bestvideo[height<=480]+bestaudio/best[height<=480]";
-            case "360p" -> "bestvideo[height<=360]+bestaudio/best[height<=360]";
-            case "Audio only" -> "bestaudio";
-            default -> "best[height<=360]";
-        };
+        File ytDlpExe = Utils.extractExecutable("yt-dlp.exe");
+        File ffmpegExe = Utils.extractExecutable("ffmpeg.exe");
 
         // Extract title and sanitize
         String rawTitle = Utils.getVideoTitle(ytDlpExe, videoUrl);
@@ -29,7 +19,10 @@ public class DownloadService {
         // Set output path using sanitized title
         String outputPath = new File(downloadsDir, sanitizedTitle + ".%(ext)s").getAbsolutePath();
 
-        // Build Process
+        // Format Selected Quality
+        String formatCode = Utils.getFormatCode(quality);
+
+        // Build Process and start
         ProcessBuilder builder = new ProcessBuilder(
                 ytDlpExe.getAbsolutePath(),
                 "-f", formatCode,
@@ -39,7 +32,6 @@ public class DownloadService {
                 "-o", outputPath,
                 videoUrl
         );
-
         builder.redirectErrorStream(true);
         Process process = builder.start();
 
@@ -76,18 +68,15 @@ public class DownloadService {
             }
         }
 
-        // Wait for process to finish and write log + history
+        // Wait for process to finish
         int exitCode = process.waitFor();
+
+        // Write log and history
         Utils.writeLog(outputLog.toString());
         Utils.writeHistory(exitCode, sanitizedTitle, videoUrl);
 
         if (exitCode != 0) {
             throw new Exception(Utils.extractErrorMessage(outputLog.toString()));
         }
-    }
-
-    // Utility method to extract native executables from the jar resource /bin
-    private static File extractExe(String exeName) throws IOException {
-        return Utils.extractExecutable(exeName);
     }
 }
