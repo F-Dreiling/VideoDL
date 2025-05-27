@@ -6,7 +6,19 @@ import java.util.function.Consumer;
 
 public class DownloadService {
 
-    public static void downloadVideo(String downloadsDir, String videoUrl, String quality, Consumer<Double> progressCallback, Consumer<String> statusCallback) throws Exception {
+    private static volatile Process currentProcess;
+    private static volatile boolean cancelled = false;
+
+    public static void cancel() {
+        cancelled = true;
+        if (currentProcess != null) {
+            currentProcess.destroy();
+        }
+    }
+
+    public static boolean downloadVideo(String downloadsDir, String videoUrl, String quality,
+                                     Consumer<Double> progressCallback, Consumer<String> statusCallback) throws Exception {
+        cancelled = false;
 
         // Extract yt-dlp.exe and ffmpeg.exe from resources/bin to temp files
         File ytDlpExe = Utils.extractExecutable("yt-dlp.exe");
@@ -17,7 +29,8 @@ public class DownloadService {
         String sanitizedTitle = Utils.sanitizeTitle(rawTitle);
 
         // Set output path using sanitized title
-        String outputPath = new File(downloadsDir, sanitizedTitle + ".%(ext)s").getAbsolutePath();
+        String outputPattern = sanitizedTitle + ".%(ext)s";
+        String outputPath = new File(downloadsDir, outputPattern).getAbsolutePath();
 
         // Format Selected Quality
         String formatCode = Utils.getFormatCode(quality);
@@ -33,38 +46,61 @@ public class DownloadService {
                 videoUrl
         );
         builder.redirectErrorStream(true);
-        Process process = builder.start();
+        currentProcess = builder.start();
 
         // Read and Update Progress and Log output
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(currentProcess.getInputStream()));
         StringBuilder outputLog = new StringBuilder();
         String line;
 
-        while ((line = reader.readLine()) != null) {
-            String parsed = Utils.cleanStatus(line.trim());
-            String message = Utils.filterMessage(parsed);
+        try {
+            while ((line = reader.readLine()) != null) {
 
-            if (!message.isEmpty()) {
-                outputLog.append(message).append(System.lineSeparator());
+                if (cancelled) return false;
+
+                // Clean status message and filter for log
+                String parsed = Utils.cleanStatus(line.trim());
+                String message = Utils.filterMessage(parsed);
+
+                if (!message.isEmpty()) {
+                    outputLog.append(message).append(System.lineSeparator());
+                }
+
+                // Call back progress and status for UI updates
+                Double progress = Utils.parseProgress(parsed);
+                if (progress != null) {
+                    Platform.runLater(() -> progressCallback.accept(progress));
+                }
+                Platform.runLater(() -> statusCallback.accept(parsed));
             }
 
-            // Call back progress and status for UI updates
-            Double progress = Utils.parseProgress(parsed);
-            if (progress != null) {
-                Platform.runLater(() -> progressCallback.accept(progress));
+            // Wait for the process to finish
+            int exitCode = currentProcess.waitFor();
+
+            // Write log and history
+            Utils.writeLog(outputLog.toString());
+            Utils.writeHistory(exitCode, sanitizedTitle, videoUrl);
+
+            if (exitCode != 0) {
+                throw new Exception(Utils.extractErrorMessage(outputLog.toString()));
             }
-            Platform.runLater(() -> statusCallback.accept(parsed));
+            return true;
         }
+        finally {
+            reader.close();
 
-        // Wait for the process to finish
-        int exitCode = process.waitFor();
+            if (cancelled) {
+                try {
+                    if (cancelled && currentProcess.isAlive()) {
+                        currentProcess.destroyForcibly();
+                        currentProcess.waitFor();
+                    }
+                    Thread.sleep(200); // give OS time to release file locks
+                }
+                catch (InterruptedException ignored) {}
 
-        // Write log and history
-        Utils.writeLog(outputLog.toString());
-        Utils.writeHistory(exitCode, sanitizedTitle, videoUrl);
-
-        if (exitCode != 0) {
-            throw new Exception(Utils.extractErrorMessage(outputLog.toString()));
+                Utils.cleanupPartialFiles(downloadsDir, sanitizedTitle);
+            }
         }
     }
 }

@@ -194,6 +194,34 @@ public class Utils {
         return null;
     }
 
+    // Cleanup Partial Files
+    public static void cleanupPartialFiles(String downloadsDir, String baseName) {
+        File dir = new File(downloadsDir);
+        if (!dir.exists()) return;
+
+        File[] leftovers = dir.listFiles(file -> {
+            String name = file.getName();
+            return name.startsWith(baseName) && (
+                    name.contains(".part") ||               // matches .part, .part-Frag34.part, etc.
+                            name.endsWith(".ytdl") ||               // yt-dlp metadata
+                            name.matches(".*\\.f\\d+\\..*")   // fragmented formats (like .f605.mp4)
+            );
+        });
+
+        if (leftovers != null) {
+            for (File file : leftovers) {
+                try {
+                    boolean deleted = file.delete();
+                    if (!deleted) {
+                        System.err.println("Could not delete: " + file.getAbsolutePath());
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error deleting file: " + file.getName() + " - " + e.getMessage());
+                }
+            }
+        }
+    }
+
     // Write daily log files
     public static void writeLog(String content) {
         try {

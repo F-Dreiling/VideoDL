@@ -12,7 +12,8 @@ public class MainController {
 
     private DirectoryChooser directoryChooser;
     private String outputDirectory;
-    private boolean isStyleChanged = false;
+    private boolean animationOn = true;
+    private boolean isDownloading = false;
     private Animations progressAnimation;
 
     @FXML
@@ -33,6 +34,14 @@ public class MainController {
     @FXML
     public void handleDownload(ActionEvent event) {
 
+        // If downloading, this is a cancel request
+        if (isDownloading) {
+            DownloadService.cancel();
+            progressLabel.setText("Cancelling...");
+            downloadButton.setDisable(true); // prevent double click while cancelling
+            return;
+        }
+
         // Validate URL
         String url = urlField.getText();
         if (!Utils.isValidUrl(url)) {
@@ -40,10 +49,10 @@ public class MainController {
             return;
         }
 
-        // Change progressbar back to normal style
-        if (!isStyleChanged) {
+        // Stop progress bar animation
+        if (animationOn) {
             progressAnimation.stopAndResetStyle();
-            isStyleChanged = true;
+            animationOn = false;
         }
 
         // Get selected quality, 360p as fallback
@@ -56,34 +65,41 @@ public class MainController {
         String quality = selected;
 
         // Prepare Download
+        isDownloading = true;
         qualitySelector.setDisable(true);
-        downloadButton.setDisable(true);
         directoryButton.setDisable(true);
+        downloadButton.setText("Cancel Download");
         progressLabel.setText("Downloading...");
+        progressBar.setProgress(0);
 
         // Start Download
         new Thread(() -> {
             try {
-                DownloadService.downloadVideo(outputDirectory, url, quality,
+                boolean finished = DownloadService.downloadVideo(outputDirectory, url, quality,
                         progress -> Platform.runLater(() -> progressBar.setProgress(progress)),
                         status -> Platform.runLater(() -> progressLabel.setText(status))
                 );
-                Platform.runLater(() -> {
-                    progressLabel.setText("Download completed!");
-                    qualitySelector.setDisable(false);
-                    downloadButton.setDisable(false);
-                    directoryButton.setDisable(false);
-                });
+                if (finished) Platform.runLater(() -> onDownloadFinished("Download completed"));
+                else Platform.runLater(() -> onDownloadFinished("Download cancelled by user"));
             }
             catch (Exception e) {
-                Platform.runLater(() -> {
-                    progressLabel.setText(e.getMessage());
-                    qualitySelector.setDisable(false);
-                    downloadButton.setDisable(false);
-                    directoryButton.setDisable(false);
-                });
+                Platform.runLater(() -> onDownloadFinished(e.getMessage()));
             }
         }).start();
+    }
+
+    private void onDownloadFinished(String message) {
+        // Reset GUI
+        isDownloading = false;
+        qualitySelector.setDisable(false);
+        directoryButton.setDisable(false);
+        downloadButton.setDisable(false);
+        downloadButton.setText("Download Video");
+        progressLabel.setText(message);
+        progressBar.setProgress(0);
+        animationOn = true;
+        progressAnimation = new Animations(progressBar);
+        progressAnimation.start();
     }
 
     public void handleOutput(ActionEvent event) {
@@ -111,7 +127,6 @@ public class MainController {
         if (downloadsFolder.exists() && downloadsFolder.isDirectory()) {
             directoryChooser.setInitialDirectory(downloadsFolder);
             outputDirectory = downloadsFolder.getAbsolutePath();
-            directoryLabel.setText("Output: " + outputDirectory);
         }
         // If not valid, set to {root}/downloads folder and create if necessary
         else {
@@ -122,13 +137,14 @@ public class MainController {
 
             directoryChooser.setInitialDirectory(downloadsFolder);
             outputDirectory = downloadsFolder.getAbsolutePath();
-            directoryLabel.setText("Output: " + outputDirectory);
         }
 
         // Make sure there's a valid output folder
-        if (outputDirectory == null || outputDirectory.isEmpty()) {
+        if (outputDirectory.isEmpty()) {
             directoryLabel.setText("Output: No valid folder selected");
-            return;
+        }
+        else {
+            directoryLabel.setText("Output: " + outputDirectory);
         }
 
         // Populate quality options
