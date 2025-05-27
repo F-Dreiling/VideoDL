@@ -115,6 +115,23 @@ public class Utils {
         };
     }
 
+    // Remove fragment information from download messages
+    public static String cleanStatus(String line) {
+        if (line == null || line.isEmpty()) {
+            return "";
+        }
+
+        if (line.startsWith("[download]")) {
+            int fragIndex = line.indexOf("frag");
+
+            if (fragIndex != -1) {
+                return line.substring(0, fragIndex-2).trim();
+            }
+        }
+
+        return line;
+    }
+
     // Filter the log for relevant messages
     public static String filterMessage(String message) {
         if (message == null || message.isEmpty()) {

@@ -41,7 +41,7 @@ public class DownloadService {
         String line;
 
         while ((line = reader.readLine()) != null) {
-            String parsed = line.trim();
+            String parsed = Utils.cleanStatus(line.trim());
             String message = Utils.filterMessage(parsed);
 
             if (!message.isEmpty()) {
