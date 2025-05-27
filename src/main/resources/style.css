@@ -24,23 +24,34 @@
 
 .progressbar .bar {
     -fx-background-color: linear-gradient(
-        from 0px 1em to 1em 0px,
+        from 0px .8em to .8em 0px,
         repeat,
         -fx-accent 0%,
-        -fx-accent 50%,
-        derive(-fx-accent, 30%) 50%,
-        derive(-fx-accent, 30%) 100%
+        -fx-accent 49%,
+        derive(-fx-accent, 30%) 49%,
+        derive(-fx-accent, 30%) 99%
     );
 }
 
 .progressbarInit .bar {
     -fx-background-color: linear-gradient(
-        from 0px 0px to 20px 0px,
+        from 0px 0px to 16px 0px,
         repeat,
         -fx-accent 0%,
-        -fx-accent 50%,
-        derive(-fx-accent, 30%) 50%,
-        derive(-fx-accent, 30%) 100%
+        -fx-accent 49%,
+        derive(-fx-accent, 30%) 49%,
+        derive(-fx-accent, 30%) 99%
+    );
+}
+
+.progressbarAlt .bar {
+    -fx-background-color: linear-gradient(
+        from 0px 0px to 16px 0px,
+        repeat,
+        derive(-fx-accent, 30%) 0%,
+        derive(-fx-accent, 30%) 49%,
+        -fx-accent 49%,
+        -fx-accent 99%
     );
 }
 

@@ -13,6 +13,7 @@ public class MainController {
     private DirectoryChooser directoryChooser;
     private String outputDirectory;
     private boolean isStyleChanged = false;
+    private Animations progressAnimation;
 
     @FXML
     private TextField urlField;
@@ -39,11 +40,9 @@ public class MainController {
             return;
         }
 
-        // Change progressbar style upon starting a download
+        // Change progressbar back to normal style
         if (!isStyleChanged) {
-            progressBar.getStyleClass().remove("progressbarInit");
-            progressBar.getStyleClass().add("progressbar");
-            progressBar.setProgress(0);
+            progressAnimation.stopAndResetStyle();
             isStyleChanged = true;
         }
 
@@ -134,5 +133,8 @@ public class MainController {
 
         // Populate quality options
         qualitySelector.getItems().addAll("1080p", "720p", "480p", "360p", "Audio only");
+
+        progressAnimation = new Animations(progressBar);
+        progressAnimation.start();
     }
 }
