@@ -18,7 +18,7 @@ public class Animations {
         this.progressBar.getStyleClass().add("progressbarInit");
 
         timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), e -> swapStyle())
+                new KeyFrame(Duration.seconds(1.25), e -> swapStyle())
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
     }
