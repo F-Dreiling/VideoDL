@@ -11,7 +11,7 @@ import java.io.File;
 public class MainController {
 
     private DirectoryChooser directoryChooser;
-    private String outputDirectory;
+    private File outputDirectory;
     private boolean animationOn = true;
     private boolean isDownloading = false;
     private Animations progressAnimation;
@@ -49,6 +49,12 @@ public class MainController {
             return;
         }
 
+        // Output validation
+        if (outputDirectory == null || !outputDirectory.exists() || !outputDirectory.isDirectory()) {
+            progressLabel.setText("Please select a valid output folder");
+            return;
+        }
+
         // Stop progress bar animation
         if (animationOn) {
             progressAnimation.stopAndResetStyle();
@@ -75,7 +81,7 @@ public class MainController {
         // Start Download
         new Thread(() -> {
             try {
-                boolean finished = DownloadService.downloadVideo(outputDirectory, url, quality,
+                boolean finished = DownloadService.downloadVideo(outputDirectory.getAbsolutePath(), url, quality,
                         progress -> Platform.runLater(() -> progressBar.setProgress(progress)),
                         status -> Platform.runLater(() -> progressLabel.setText(status))
                 );
@@ -109,47 +115,46 @@ public class MainController {
         // Get folder from Chooser dialog and validate
         File selectedFolder = directoryChooser.showDialog(stage);
         if (selectedFolder != null && selectedFolder.isDirectory()) {
-            outputDirectory = selectedFolder.getAbsolutePath();
-            directoryLabel.setText("Output: " + outputDirectory);
+            outputDirectory = selectedFolder;
+        }
+
+        // Complain if no new folder was selected and the previous one wasn't valid
+        if (outputDirectory == null) {
+            directoryLabel.setText("Output: Select valid folder");
         }
         else {
-            directoryLabel.setText("Output: Select valid folder");
+            directoryLabel.setText("Output: " + outputDirectory.getAbsolutePath());
         }
     }
 
     public void initialize() {
-        // Initialize DirectoryChooser with the default folder (Windows Downloads)
+        // Initialize DirectoryChooser with the system default folder (Windows Downloads)
         String userHome = System.getProperty("user.home");
         File downloadsFolder = new File(userHome, "Downloads");
         directoryChooser = new DirectoryChooser();
 
-        // If valid, set to default downloads folder
-        if (downloadsFolder.exists() && downloadsFolder.isDirectory()) {
-            directoryChooser.setInitialDirectory(downloadsFolder);
-            outputDirectory = downloadsFolder.getAbsolutePath();
-        }
-        // If not valid, set to {root}/downloads folder and create if necessary
-        else {
+        // If not valid, set to {app}/downloads folder and create if necessary
+        if (!downloadsFolder.exists() || !downloadsFolder.isDirectory()) {
             downloadsFolder = new File(System.getProperty("user.dir"), "downloads");
             if (!downloadsFolder.exists()) {
                 downloadsFolder.mkdirs();
             }
-
-            directoryChooser.setInitialDirectory(downloadsFolder);
-            outputDirectory = downloadsFolder.getAbsolutePath();
         }
 
         // Make sure there's a valid output folder
-        if (outputDirectory.isEmpty()) {
+        if (!downloadsFolder.exists() || !downloadsFolder.isDirectory()) {
             directoryLabel.setText("Output: No valid folder selected");
         }
         else {
+            directoryChooser.setInitialDirectory(downloadsFolder);
+            outputDirectory = downloadsFolder;
             directoryLabel.setText("Output: " + outputDirectory);
         }
 
         // Populate quality options
         qualitySelector.getItems().addAll("1080p", "720p", "480p", "360p", "Audio only");
 
+        // Start idle animation
         progressAnimation = new Animations(progressBar);
         progressAnimation.start();
     }
