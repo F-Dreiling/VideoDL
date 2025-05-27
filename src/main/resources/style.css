@@ -31,6 +31,7 @@
         derive(-fx-accent, 30%) 49%,
         derive(-fx-accent, 30%) 99%
     );
+    -fx-opacity: 0.95;
 }
 
 .progressbarInit .bar {
@@ -42,6 +43,7 @@
         derive(-fx-accent, 30%) 49%,
         derive(-fx-accent, 30%) 99%
     );
+    -fx-opacity: 0.9;
 }
 
 .progressbarAlt .bar {
@@ -53,6 +55,7 @@
         -fx-accent 49%,
         -fx-accent 99%
     );
+    -fx-opacity: 0.85;
 }
 
 .combo-box:disabled,
