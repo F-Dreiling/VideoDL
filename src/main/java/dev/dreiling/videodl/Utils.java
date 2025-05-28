@@ -11,19 +11,6 @@ public class Utils {
     private static final File LOG_DIR = new File("log");
     private static final File HISTORY_FILE = new File("history.txt");
 
-    // Validate URL
-    public static boolean isValidUrl(String url) {
-        if (url == null || url.isEmpty()) return false;
-
-        try {
-            new java.net.URL(url).toURI(); // Validates both syntax and URI rules
-            return url.startsWith("http://") || url.startsWith("https://");
-        }
-        catch (Exception e) {
-            return false;
-        }
-    }
-
     // Extracts a native executable from the jar resource /bin to a temporary file
     public static File extractExecutable(String exeName) throws IOException {
         String resourcePath = "/bin/" + exeName;
@@ -36,7 +23,7 @@ public class Utils {
         File tempFile = File.createTempFile(exeName, ".exe");
         tempFile.deleteOnExit();
 
-        // Copy resource contents to temp file
+        // Copy resource contents to the temp file
         Files.copy(in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         in.close();
 
@@ -66,7 +53,7 @@ public class Utils {
 
         while ((line = reader.readLine()) != null) {
             line = line.trim();
-            // Typically, the title should be the first non-empty line
+            // The title should be the first non-empty line
             if (!line.isEmpty()) {
                 title = line;
                 break;
@@ -77,7 +64,8 @@ public class Utils {
 
         if (exitCode == 0 && title != null && !title.toLowerCase().startsWith("warning")) {
             return title;
-        } else {
+        }
+        else {
             return "Unknown";
         }
     }
@@ -95,7 +83,7 @@ public class Utils {
         title = title.replaceAll("\\.f\\d+$", "");
 
         // Replace invalid filename characters on Windows and others
-        title = title.replaceAll("[\\\\/:*?\"<>|]", "_");
+        title = title.replaceAll("[\\\\/:*?\"<>|]", "");
 
         // Collapse multiple spaces and trim
         title = title.replaceAll("\\s+", " ").trim();

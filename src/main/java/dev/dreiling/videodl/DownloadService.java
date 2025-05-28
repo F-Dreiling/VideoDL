@@ -95,7 +95,8 @@ public class DownloadService {
                         currentProcess.destroyForcibly();
                         currentProcess.waitFor();
                     }
-                    Thread.sleep(200); // give OS time to release file locks
+                    // give OS time to release file locks
+                    Thread.sleep(200);
                 }
                 catch (InterruptedException ignored) {}
 
