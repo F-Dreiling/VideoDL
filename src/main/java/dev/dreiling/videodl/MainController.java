@@ -91,7 +91,6 @@ public class MainController {
         directoryButton.setDisable(true);
         downloadButton.setText("Cancel Download");
         progressLabel.setText("Downloading...");
-        progressBar.setProgress(0);
 
         // Start Download
         new Thread(() -> {
@@ -117,7 +116,6 @@ public class MainController {
         downloadButton.setDisable(false);
         downloadButton.setText("Download Video");
         progressLabel.setText(message);
-        progressBar.setProgress(0);
         animationOn = true;
         progressAnimation = new Animations(progressBar);
         progressAnimation.start();
